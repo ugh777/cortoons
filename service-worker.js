@@ -1,4 +1,4 @@
-const CACHE_NAME = "moonbeam-shell-v1";
+const CACHE_NAME = "moonbeam-shell-v2";
 const APP_SHELL_URL = new URL("./index.html", self.registration.scope).href;
 
 self.addEventListener("install", (event) => {
@@ -29,11 +29,25 @@ self.addEventListener("fetch", (event) => {
   if (requestUrl.origin !== self.location.origin) return;
 
   event.respondWith(
-    fetch(request)
-      .catch(async () => {
+    (async () => {
+      let response;
+      try {
+        response = await fetch(request);
+      } catch (networkError) {
         const cached = await caches.match(APP_SHELL_URL);
         if (cached) return cached;
-        throw new Error("The page is not cached for offline use yet.");
-      })
+        throw networkError;
+      }
+
+      if (response.ok) {
+        try {
+          const cache = await caches.open(CACHE_NAME);
+          await cache.put(APP_SHELL_URL, response.clone());
+        } catch (cacheError) {
+          console.error("Could not refresh the offline page cache:", cacheError);
+        }
+      }
+      return response;
+    })()
   );
 });
