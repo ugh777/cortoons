@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101124">
+  <title>Moonbeam — Your video library</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #101124;
+      color: #f7f5ff;
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-width: 320px;
+      min-height: 100vh;
+      margin: 0;
+      background:
+        radial-gradient(ellipse at 12% 8%, rgb(101 72 211 / 25%), transparent 35rem),
+        radial-gradient(ellipse at 90% 30%, rgb(30 159 190 / 16%), transparent 34rem),
+        linear-gradient(160deg, #15152d 0%, #101124 55%, #111a2b 100%);
+    }
+
+    body::before {
+      position: fixed;
+      z-index: -1;
+      inset: 0;
+      background-image: radial-gradient(1px 1px at 20px 30px, #fff8 99%, transparent),
+        radial-gradient(1px 1px at 80px 120px, #c8c4ff99 99%, transparent),
+        radial-gradient(2px 2px at 180px 70px, #fff7 99%, transparent);
+      background-size: 240px 180px;
+      content: "";
+      pointer-events: none;
+    }
+
+    button, input, select { font: inherit; }
+    button, select, .upload-button { -webkit-tap-highlight-color: transparent; }
+
+    .shell { width: min(1120px, calc(100% - 40px)); margin: 0 auto; }
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 28px 0;
+      border-bottom: 1px solid rgb(255 255 255 / 9%);
+    }
+
+    .brand { display: flex; align-items: center; gap: 12px; font-size: 1.15rem; font-weight: 750; letter-spacing: -.04em; }
+    .brand-mark {
+      display: grid;
+      width: 38px;
+      height: 38px;
+      place-items: center;
+      border: 1px solid rgb(255 255 255 / 20%);
+      border-radius: 13px;
+      background: linear-gradient(145deg, #a991ff, #5c55d9 70%);
+      box-shadow: 0 8px 26px rgb(107 88 230 / 35%);
+      font-size: 1.15rem;
+    }
+    .brand span:last-child { color: #aaa4ff; }
+    .privacy { color: #aaa9c3; font-size: .82rem; }
+
+    main { padding: 68px 0 80px; }
+    .hero { max-width: 720px; margin-bottom: 38px; }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 18px;
+      color: #c3baff;
+      font-size: .78rem;
+      font-weight: 700;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+    .eyebrow::before { width: 7px; height: 7px; border-radius: 50%; background: #a991ff; box-shadow: 0 0 14px #a991ff; content: ""; }
+    h1 { margin: 0; font-size: clamp(2.5rem, 6vw, 4.65rem); line-height: 1.04; letter-spacing: -.065em; }
+    h1 span { color: #a99aff; }
+    .intro { max-width: 570px; margin: 19px 0 0; color: #b7b6ce; font-size: 1.04rem; line-height: 1.7; }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin: 36px 0 22px;
+    }
+    .toolbar h2 { margin: 0; font-size: 1.15rem; letter-spacing: -.025em; }
+    .toolbar-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+    .language, .search {
+      min-height: 43px;
+      border: 1px solid rgb(255 255 255 / 12%);
+      border-radius: 12px;
+      outline: none;
+      background: rgb(255 255 255 / 5%);
+      color: #f7f5ff;
+    }
+    .language { padding: 0 35px 0 13px; }
+    .search { width: min(220px, 42vw); padding: 0 13px; }
+    .search::placeholder { color: #8d8ba8; }
+    .language:focus, .search:focus { border-color: #9c8bff; box-shadow: 0 0 0 3px rgb(156 139 255 / 16%); }
+
+    .upload-button {
+      display: inline-flex;
+      min-height: 43px;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 0 15px;
+      border: 0;
+      border-radius: 12px;
+      background: #a99aff;
+      color: #17142a;
+      cursor: pointer;
+      font-size: .9rem;
+      font-weight: 750;
+      transition: transform .18s ease, background .18s ease;
+    }
+    .upload-button:hover { transform: translateY(-1px); background: #b9adff; }
+    .upload-button:focus-visible, .remove:focus-visible, .download:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+    .upload-button input { display: none; }
+
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr)); gap: 18px; }
+    .card {
+      overflow: hidden;
+      border: 1px solid rgb(255 255 255 / 10%);
+      border-radius: 18px;
+      background: rgb(255 255 255 / 5%);
+      box-shadow: 0 16px 38px rgb(0 0 0 / 13%);
+    }
+    .card video { display: block; width: 100%; aspect-ratio: 16 / 9; background: #090a14; object-fit: contain; }
+    .card-info { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 15px 15px 16px; }
+    .card-title { overflow: hidden; margin: 0 0 6px; font-size: .96rem; font-weight: 680; text-overflow: ellipsis; white-space: nowrap; }
+    .card-meta { margin: 0; color: #aaa9c3; font-size: .79rem; }
+    .card-actions { display: flex; flex-shrink: 0; gap: 8px; }
+    .download, .remove {
+      display: grid;
+      width: 35px;
+      height: 35px;
+      place-items: center;
+      border: 1px solid rgb(255 255 255 / 13%);
+      border-radius: 10px;
+      background: rgb(255 255 255 / 6%);
+      color: #e8e4ff;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .download:hover, .remove:hover { background: rgb(255 255 255 / 13%); }
+    .download svg, .remove svg { width: 17px; height: 17px; }
+
+    .empty {
+      display: grid;
+      min-height: 255px;
+      padding: 35px 20px;
+      place-items: center;
+      border: 1px dashed rgb(255 255 255 / 17%);
+      border-radius: 18px;
+      background: rgb(255 255 255 / 2%);
+      text-align: center;
+    }
+    .empty-icon { display: grid; width: 50px; height: 50px; margin: 0 auto 13px; place-items: center; border-radius: 16px; background: rgb(169 154 255 / 13%); color: #c2b8ff; font-size: 1.4rem; }
+    .empty h3 { margin: 0 0 7px; font-size: 1rem; }
+    .empty p { max-width: 400px; margin: 0; color: #aaa9c3; font-size: .87rem; line-height: 1.55; }
+    .empty .upload-button { margin-top: 17px; }
+    .note { margin: 21px 0 0; color: #8988a4; font-size: .77rem; line-height: 1.55; }
+
+    footer { padding: 18px 0 30px; border-top: 1px solid rgb(255 255 255 / 8%); color: #8988a4; font-size: .77rem; }
+    @media (max-width: 620px) {
+      .shell { width: min(100% - 28px, 1120px); }
+      header { padding: 20px 0; }
+      .privacy { max-width: 122px; text-align: right; line-height: 1.4; }
+      main { padding: 48px 0 58px; }
+      .toolbar { align-items: flex-start; flex-direction: column; }
+      .toolbar-actions { width: 100%; }
+      .search { flex: 1; width: auto; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <div class="brand"><span class="brand-mark" aria-hidden="true">✦</span><span>moonbeam<span> / library</span></span></div>
+      <div class="privacy">Your files stay on this device</div>
+    </header>
+
+    <main>
+      <section class="hero" aria-labelledby="page-title">
+        <p class="eyebrow">A little space for your stories</p>
+        <h1 id="page-title">Your movies.<br><span>Your way.</span></h1>
+        <p class="intro">A personal video library for the films and episodes you love. Add your own videos, choose a language, and watch or download them right here.</p>
+      </section>
+
+      <section aria-labelledby="library-title">
+        <div class="toolbar">
+          <h2 id="library-title">Your library <span id="item-count" aria-live="polite"></span></h2>
+          <div class="toolbar-actions">
+            <label class="upload-button">
+              <span aria-hidden="true">＋</span> Add videos
+              <input id="file-picker" type="file" accept="video/*" multiple aria-label="Add video files">
+            </label>
+            <select class="language" id="language-filter" aria-label="Filter by language">
+              <option value="all">All languages</option>
+              <option value="Telugu">Telugu</option>
+              <option value="English">English</option>
+              <option value="Hindi">Hindi</option>
+              <option value="Tamil">Tamil</option>
+              <option value="Japanese">Japanese</option>
+              <option value="Other">Other</option>
+            </select>
+            <input class="search" id="search" type="search" placeholder="Search videos" aria-label="Search videos">
+          </div>
+        </div>
+
+        <div id="video-grid" class="grid" aria-live="polite"></div>
+        <p class="note">Only add or share videos you own or have permission to use. Videos are loaded locally in your browser and are not uploaded to a server.</p>
+      </section>
+    </main>
+
+    <footer>Made for your personal collection · No account required</footer>
+  </div>
+
+  <script>
+    (() => {
+      const picker = document.querySelector("#file-picker");
+      const filter = document.querySelector("#language-filter");
+      const search = document.querySelector("#search");
+      const grid = document.querySelector("#video-grid");
+      const count = document.querySelector("#item-count");
+      const videos = [];
+      const icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4"/><path d="M5 17v3h14v-3"/></svg>';
+
+      function render() {
+        const language = filter.value;
+        const query = search.value.trim().toLowerCase();
+        const visible = videos.filter((video) =>
+          (language === "all" || video.language === language) &&
+          video.name.toLowerCase().includes(query)
+        );
+        count.textContent = videos.length ? `(${visible.length}${visible.length !== videos.length ? ` of ${videos.length}` : ""})` : "";
+        grid.replaceChildren();
+
+        if (!visible.length) {
+          const empty = document.createElement("div");
+          empty.className = "empty";
+          empty.style.gridColumn = "1 / -1";
+          const heading = videos.length ? "No videos match your filters" : "Your library is ready";
+          const message = videos.length
+            ? "Try another language or search term."
+            : "Add a video file from your device to get started. Your collection is private to this browser.";
+          empty.innerHTML = `<div><div class="empty-icon" aria-hidden="true">✧</div><h3>${heading}</h3><p>${message}</p></div>`;
+          if (!videos.length) {
+            const label = document.createElement("label");
+            label.className = "upload-button";
+            label.textContent = "＋ Add videos";
+            const input = document.createElement("input");
+            input.type = "file";
+            input.accept = "video/*";
+            input.multiple = true;
+            input.setAttribute("aria-label", "Add video files");
+            input.addEventListener("change", addFiles);
+            input.style.display = "none";
+            label.append(input);
+            empty.firstElementChild.append(label);
+          }
+          grid.append(empty);
+          return;
+        }
+
+        for (const video of visible) {
+          const card = document.createElement("article");
+          card.className = "card";
+          const player = document.createElement("video");
+          player.src = video.url;
+          player.controls = true;
+          player.preload = "metadata";
+          player.setAttribute("aria-label", video.name);
+          const info = document.createElement("div");
+          info.className = "card-info";
+          const text = document.createElement("div");
+          text.style.minWidth = "0";
+          const title = document.createElement("h3");
+          title.className = "card-title";
+          title.textContent = video.name;
+          title.title = video.name;
+          const meta = document.createElement("p");
+          meta.className = "card-meta";
+          meta.textContent = `${video.language} · ${formatSize(video.size)}`;
+          text.append(title, meta);
+          const actions = document.createElement("div");
+          actions.className = "card-actions";
+          const download = document.createElement("a");
+          download.className = "download";
+          download.href = video.url;
+          download.download = video.name;
+          download.setAttribute("aria-label", `Download ${video.name}`);
+          download.title = "Download";
+          download.innerHTML = icon;
+          const remove = document.createElement("button");
+          remove.className = "remove";
+          remove.type = "button";
+          remove.setAttribute("aria-label", `Remove ${video.name}`);
+          remove.title = "Remove from library";
+          remove.textContent = "×";
+          remove.addEventListener("click", () => {
+            URL.revokeObjectURL(video.url);
+            videos.splice(videos.indexOf(video), 1);
+            render();
+          });
+          actions.append(download, remove);
+          info.append(text, actions);
+          card.append(player, info);
+          grid.append(card);
+        }
+      }
+
+      function formatSize(bytes) {
+        if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} KB`;
+        return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+      }
+
+      function addFiles(event) {
+        const files = Array.from(event.target.files || []).filter((file) => file.type.startsWith("video/"));
+        for (const file of files) {
+          videos.push({ name: file.name, size: file.size, language: filter.value === "all" ? "Other" : filter.value, url: URL.createObjectURL(file) });
+        }
+        event.target.value = "";
+        render();
+      }
+
+      picker.addEventListener("change", addFiles);
+      filter.addEventListener("change", render);
+      search.addEventListener("input", render);
+      window.addEventListener("beforeunload", () => videos.forEach((video) => URL.revokeObjectURL(video.url)));
+      render();
+    })();
+  </script>
+</body>
+</html>
