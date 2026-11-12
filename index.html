@@ -107,6 +107,24 @@
     .search::placeholder { color: #8d8ba8; }
     .language:focus, .search:focus { border-color: #9c8bff; box-shadow: 0 0 0 3px rgb(156 139 255 / 16%); }
 
+    .featured {
+      overflow: hidden;
+      margin: 34px 0 42px;
+      border: 1px solid rgb(255 255 255 / 10%);
+      border-radius: 18px;
+      background: rgb(255 255 255 / 5%);
+      box-shadow: 0 16px 38px rgb(0 0 0 / 13%);
+    }
+    .featured-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 20px 22px; }
+    .featured-heading h2 { margin: 0; font-size: 1.15rem; }
+    .featured-heading p { margin: 0 0 6px; color: #c3baff; font-size: .73rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+    .featured-link { color: #c3baff; font-size: .84rem; text-decoration: none; }
+    .featured-link:hover { text-decoration: underline; }
+    .featured-player { aspect-ratio: 16 / 9; background: #090a14; }
+    .featured-player iframe { display: block; width: 100%; height: 100%; border: 0; }
+    .featured-credit { margin: 0; padding: 13px 22px 16px; color: #aaa9c3; font-size: .76rem; line-height: 1.55; }
+    .featured-credit a { color: #c3baff; }
+
     .upload-button {
       display: inline-flex;
       min-height: 43px;
@@ -195,6 +213,26 @@
         <p class="eyebrow">A little space for your stories</p>
         <h1 id="page-title">Your movies.<br><span>Your way.</span></h1>
         <p class="intro">A personal video library for the films and episodes you love. Add your own videos, choose a language, and watch or download them right here.</p>
+      </section>
+
+      <section class="featured" aria-labelledby="featured-title">
+        <div class="featured-heading">
+          <div>
+            <p>Featured open movie</p>
+            <h2 id="featured-title">Big Buck Bunny</h2>
+          </div>
+          <a class="featured-link" href="https://www.youtube.com/watch?v=YE7VzlLtp-4" target="_blank" rel="noopener noreferrer">Watch on YouTube ↗</a>
+        </div>
+        <div class="featured-player">
+          <iframe
+            src="https://www.youtube-nocookie.com/embed/YE7VzlLtp-4"
+            title="Big Buck Bunny animated short by Blender Foundation"
+            loading="lazy"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerpolicy="strict-origin-when-cross-origin"
+            allowfullscreen></iframe>
+        </div>
+        <p class="featured-credit">Big Buck Bunny · (c) 2008 Blender Foundation / <a href="https://www.bigbuckbunny.org/" target="_blank" rel="noopener noreferrer">bigbuckbunny.org</a> · Licensed under <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank" rel="noopener noreferrer">Creative Commons Attribution 3.0</a>.</p>
       </section>
 
       <section aria-labelledby="library-title">
